@@ -1,6 +1,25 @@
 # Market Pulse - AI-Powered Stock Analysis Platform
 
+> **Status: Project is now fully functional and running!**
+
 Market Pulse is a fullstack TypeScript application that provides AI-powered stock market sentiment analysis using Google Gemini AI. The platform analyzes stock momentum, news sentiment, and market trends to provide users with actionable insights.
+
+---
+
+## 🚀 Quick Start (Easy Deployment)
+
+A `start.sh` script is provided for easy setup and deployment. This script will install dependencies, build the frontend and backend, and start the server.
+
+**To deploy locally:**
+
+```bash
+chmod +x start.sh
+./start.sh
+```
+
+The app will be available at [http://localhost:5000](http://localhost:5000)
+
+---
 
 ## Features
 
@@ -32,7 +51,9 @@ Market Pulse is a fullstack TypeScript application that provides AI-powered stoc
 
 ### Prerequisites
 - Node.js 18+ installed
-- Google Gemini API key
+- Google Gemini API key (for production)
+
+> **Note:** For testing, a hardcoded Gemini API key is present in `src/server/services/gemini.ts`. **Never use hardcoded keys in production!**
 
 ### Environment Variables
 Create a `.env` file in the root directory:
@@ -244,18 +265,13 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - `.github/workflows/ci.yml` — GitHub Actions CI config
 - `README.md` — Project documentation
 - `.env.example` — Example environment variables
-- `MarketPulseTracker/` — **Legacy folder** (see below)
+- `MarketPulseTracker/` — **Legacy folder, not used in current deployment**
 
-## Legacy Folder: `MarketPulseTracker/`
+## Easy Start Script
 
-> **Note:**
-> The `MarketPulseTracker/` folder is a legacy directory containing the original, pre-reorganization codebase (backend, frontend, configs, etc.).
->
-> - It is **not used** in the new structure.
-> - All active development and deployment should use the new `src/`, `frontend/`, and `k8s/` folders at the project root.
-> - You may safely ignore or delete `MarketPulseTracker/` after confirming your migration is complete.
-> - It is retained here temporarily for reference and backup during the transition.
+A helper script `start.sh` is included for quick local deployment. It will:
+- Install backend and frontend dependencies
+- Build the frontend
+- Start the backend server
 
-## Setup, Environment, and Usage
-
-... (keep your existing setup, env, and usage instructions here) ...
+---
