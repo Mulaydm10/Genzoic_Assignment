@@ -1,6 +1,6 @@
 // Gemini Integration with Hardcoded API Key (for testing only)
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 
 // ✅ HARD-CODE YOUR KEY HERE for testing only (NEVER in production)
 const API_KEY = "AIzaSyAqdMZBl5Kip_UI4gPspxReKUKkrluWaqg"; // Replace this with your real Gemini API key
@@ -8,8 +8,7 @@ const API_KEY = "AIzaSyAqdMZBl5Kip_UI4gPspxReKUKkrluWaqg"; // Replace this with 
 console.log("[Gemini] Hardcoded API Key length:", API_KEY.length);
 
 // ✅ Initialize Gemini
-const genAI = new GoogleGenerativeAI(API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+const ai = new GoogleGenAI({ apiKey: API_KEY });
 
 
 // ✅ Interface
@@ -64,13 +63,43 @@ ${prompt.newsText}
 
 Again, output ONLY a raw JSON object. Do not add commentary or wrap it in a code block.`;
 
+    // Step 1: Validate prompt
+    if (!systemPrompt || typeof systemPrompt !== "string") {
+      throw new Error("Prompt is invalid or missing");
+    }
+
     // Retry logic for 503 errors
     const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
     let lastError: any = null;
     for (let attempt = 1; attempt <= 3; attempt++) {
+      let result;
       try {
-        const result = await model.generateContent({ contents: [{ role: "user", parts: [{ text: systemPrompt }] }] });
-        let rawText = result.response.text();
+        // Step 2: Safe wrapper for model.generateContent
+        try {
+          result = await ai.models.generateContent({
+            model: "gemini-2.0-flash-001",
+            contents: [
+              {
+                role: "user",
+                parts: [{ text: systemPrompt }]
+              }
+            ]
+          });
+        } catch (error) {
+          console.error("[Gemini] model.generateContent failed:", error);
+          return {
+            pulse: "neutral",
+            confidence: 50,
+            llm_explanation: "LLM unavailable; using fallback.",
+            error: error?.message ?? "Unknown Gemini error"
+          };
+        }
+        // Step 3: Fallback at parsing layer
+        if (!result || typeof result !== "object") {
+          throw new Error("Gemini result is invalid");
+        }
+        // Correctly extract the text from the Gemini response
+        let rawText = result.candidates?.[0]?.content?.parts?.[0]?.text;
         if (rawText) {
           try {
             let cleaned = rawText.trim();
