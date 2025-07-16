@@ -1,0 +1,10 @@
+{
+  "extends": "../MarketPulseTracker/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["../MarketPulseTracker/shared/*"]
+    }
+  },
+  "include": ["./server/**/*", "./services/**/*"]
+} 
