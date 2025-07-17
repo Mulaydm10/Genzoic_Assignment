@@ -4,7 +4,8 @@
     "baseUrl": ".",
     "paths": {
       "@shared/*": ["shared/*"]
-    }
+    },
+    "types": ["jest"]
   },
   "include": ["./server/**/*", "./services/**/*"]
 } 

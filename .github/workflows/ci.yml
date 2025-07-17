@@ -15,10 +15,10 @@ jobs:
           node-version: 20
       - name: Install dependencies
         run: |
-          cd server && npm install
+          cd src && npm install
       - name: Lint
         run: |
-          cd server && npx eslint .
+          cd src && npx eslint .
       - name: Test
         run: |
-          cd server && npx jest 
+          cd src && npx jest 

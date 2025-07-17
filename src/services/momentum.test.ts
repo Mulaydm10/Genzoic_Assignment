@@ -1,4 +1,4 @@
-import { calculateMomentumScore } from './momentum';
+import { calculateMomentumScore } from '../server/services/momentum';
 
 describe('calculateMomentumScore', () => {
   it('returns 0 for empty array', () => {

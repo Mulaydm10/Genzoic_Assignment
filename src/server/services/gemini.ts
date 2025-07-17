@@ -91,7 +91,7 @@ Again, output ONLY a raw JSON object. Do not add commentary or wrap it in a code
             pulse: "neutral",
             confidence: 50,
             llm_explanation: "LLM unavailable; using fallback.",
-            error: error?.message ?? "Unknown Gemini error"
+            error: typeof error === 'object' && error && 'message' in error ? (error as any).message : String(error) || "Unknown Gemini error"
           };
         }
         // Step 3: Fallback at parsing layer
