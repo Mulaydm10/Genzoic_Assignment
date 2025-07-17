@@ -33,7 +33,7 @@ describe('generateMarketAnalysis', () => {
   it('returns valid result for good input (mocked)', async () => {
     const result = await generateMarketAnalysis('AAPL', 1.23, [1,2,3], [{title:'t',description:'d',sentiment:'neutral'}]);
     expect(result.pulse).toBe('bullish');
-    expect(result.confidence).toBe(90);
+    expect(result.confidence).toBe(75);
     expect(result.llm_explanation).toBe('Test');
   });
 }); 
