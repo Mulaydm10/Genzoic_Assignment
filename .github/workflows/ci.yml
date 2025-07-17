@@ -21,4 +21,4 @@ jobs:
           cd src && npx eslint .
       - name: Test
         run: |
-          cd src && npx jest 
+          cd src && npx jest --config jest.config.cjs 
