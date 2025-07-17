@@ -157,7 +157,8 @@ export async function generateMarketAnalysis(
     title: string;
     description: string;
     sentiment: string;
-  }>
+  }>,
+  analyzeSentimentImpl: typeof analyzeSentiment = analyzeSentiment
 ): Promise<MarketPulseAnalysis> {
   // Explicitly cast and validate momentumScore
   const ms = Number(momentumScore);
@@ -201,5 +202,5 @@ export async function generateMarketAnalysis(
     newsText
   });
   // Pass structured prompt data to analyzeSentiment
-  return await analyzeSentiment({ momentumScore: ms, returns: returnsArr, newsText });
+  return await analyzeSentimentImpl({ momentumScore: ms, returns: returnsArr, newsText });
 }
