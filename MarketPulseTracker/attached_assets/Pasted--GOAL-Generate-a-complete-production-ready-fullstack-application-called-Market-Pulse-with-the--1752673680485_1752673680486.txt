@@ -1,0 +1,128 @@
+📦 GOAL:
+Generate a complete, production-ready fullstack application called `Market-Pulse` with the following features.
+
+---
+
+🧠 PROJECT PURPOSE:
+A user enters a stock ticker (like MSFT), and the app:
+1. Fetches the last 5 trading-day returns
+2. Calculates a momentum score
+3. Fetches 5 recent news headlines (mocked or real)
+4. Sends both signals to Gemini (via API)
+5. Gets back a pulse: bullish / neutral / bearish + explanation
+6. Shows it in a simple React UI
+
+---
+
+📁 STRUCTURE:
+Use this monorepo folder layout:
+market-pulse/
+├── backend/
+│ ├── index.ts
+│ ├── routes.ts
+│ ├── momentum.ts
+│ ├── news.ts
+│ ├── gemini.ts
+│ ├── cache.ts
+│ └── .env (with GEMINI_API_KEY)
+├── frontend/
+│ ├── src/
+│ │ ├── App.tsx
+│ │ ├── components/
+│ │ │ ├── TickerInput.tsx
+│ │ │ ├── ResponseCard.tsx
+│ │ │ ├── LoadingIndicator.tsx
+│ │ │ └── ErrorBox.tsx
+│ │ └── index.tsx
+│ └── package.json
+├── README.md
+
+yaml
+Copy
+Edit
+
+---
+
+🚀 BACKEND FEATURES (TypeScript + Node + Express):
+- Endpoint: `GET /api/v1/market-pulse?ticker=XYZ`
+- Accepts ticker as query param
+- Fetches 5-day returns (mock if no real API)
+- Calculates momentum score:
+```ts
+function calculateMomentumScore(returns: number[]): number {
+  const sum = returns.reduce((acc, val) => acc + val, 0);
+  return parseFloat((sum / returns.length).toFixed(2));
+}
+Fetches 5 recent news headlines (mocked or NewsAPI)
+
+Calls Gemini with prompt like:
+
+csharp
+Copy
+Edit
+Given a stock with momentum score {score} and returns {array}, and the following news:
+1. {title} - {desc}
+...
+What is the pulse (bullish/neutral/bearish) and why? Respond in JSON:
+{
+  "pulse": "bullish",
+  "llm_explanation": "..."
+}
+Parses and merges LLM result into final JSON
+
+Uses in-memory cache (object with TTL check) for 10 min
+
+Uses @google/generative-ai for Gemini
+
+.env example:
+
+ini
+Copy
+Edit
+GEMINI_API_KEY=AIzaSyAqdMZBl5Kip_UI4gPspxReKUKkrluWaqg
+💻 FRONTEND FEATURES (React + Tailwind):
+
+Input box for ticker
+
+Submit button or Enter triggers API call
+
+Displays llm_explanation in a card
+
+Shows collapsible raw JSON
+
+Loading state while fetching
+
+Error message if fetch fails
+
+Bonus: Sparkline for last 5 returns using recharts
+
+📝 README.md should contain:
+
+Setup instructions for backend + frontend
+
+.env variable info
+
+Sample CURL:
+
+bash
+Copy
+Edit
+curl http://localhost:3000/api/v1/market-pulse?ticker=AAPL
+Architecture overview
+
+Design decisions
+
+"Next steps" (e.g., Docker, k8s, tests)
+
+📌 FINAL NOTES:
+
+Everything must be runnable locally after npm install in both backend and frontend
+
+Do not hardcode the Gemini key in source files
+
+Gemini integration must include prompt + JSON parsing
+
+Do not implement CI/CD or Docker (optional)
+
+🔧 OUTPUT:
+Generate the entire codebase so it can be downloaded, opened in Replit/VSC, and run with npm start (both backend and frontend).

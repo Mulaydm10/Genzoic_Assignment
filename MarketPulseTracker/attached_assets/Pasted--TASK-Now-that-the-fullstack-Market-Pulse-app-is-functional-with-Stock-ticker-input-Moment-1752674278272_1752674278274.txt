@@ -1,0 +1,84 @@
+🎯 TASK:
+Now that the fullstack “Market-Pulse” app is functional with:
+- Stock ticker input
+- Momentum + news fetch
+- Gemini integration
+- Chat-style UI + explanation + JSON display
+
+🛠️ ADD THE FOLLOWING FINAL FEATURES TO COMPLETE THE PROJECT:
+
+---
+
+🚀 BACKEND:
+
+1. ✅ **In-memory TTL Cache:**
+   - Store ticker responses for 10 minutes
+   - Use a simple object cache with timestamps
+   - Reuse cached data if a user hits the same ticker again within TTL
+
+2. ✅ **Validation & Error Handling:**
+   - If ticker param is missing or invalid, return 400 with a helpful message
+   - Catch and gracefully handle errors from API calls or Gemini failure
+   - Return fallback LLM explanation if Gemini fails (e.g., `"LLM service is unavailable right now."`)
+
+3. ✅ **Rate-limiting or Debouncing (Optional):**
+   - Basic protection against repeated spam API calls (in-memory or middleware)
+
+---
+
+📦 FRONTEND (React + Tailwind):
+
+4. ✅ **Polish UI:**
+   - Add sparkline chart showing last 5-day returns using `recharts`
+   - Add light/dark toggle using Tailwind (or system preference)
+   - Make JSON section collapsible/expandable
+   - Improve layout responsiveness for mobile & desktop
+
+5. ✅ **UX Improvements:**
+   - Auto-focus on input field on load
+   - Hitting `Enter` submits ticker
+   - Show loading spinner while waiting
+   - Display error message if ticker fetch fails
+
+6. ✅ **Code Organization:**
+   - Separate components: `TickerInput`, `ResponseCard`, `SparklineChart`, `ErrorBox`, `LoadingIndicator`
+   - Use custom hook (e.g., `useMarketPulse`) to fetch and manage state
+
+---
+
+🧪 TESTING (Optional but Bonus):
+
+7. ✅ **Backend Unit Test (with Jest or Vitest):**
+   - Write test for `calculateMomentumScore`
+   - Write test for `buildGeminiPrompt()`
+
+---
+
+🐳 DOCKER (Optional Bonus):
+
+8. ✅ **Dockerfile & docker-compose:**
+   - `Dockerfile` for backend
+   - (Optional) container for frontend
+   - `docker-compose.yml` to spin both up
+
+---
+
+📝 README.md UPDATE:
+
+9. ✅ Expand the README with:
+   - Complete setup (backend + frontend)
+   - `.env` vars needed
+   - Sample curl request
+   - Design decisions
+   - Limitations and “Next Steps”
+   - Acknowledgement of LLM use (Gemini)
+
+---
+
+🔁 OUTPUT EXPECTED:
+Update the existing codebase (not recreate it), adding:
+- Feature files
+- Refactored frontend components
+- Enhanced error/UI handling
+- README enhancements
+All final assets must be ready for download and run after `npm install` and `npm start`.
