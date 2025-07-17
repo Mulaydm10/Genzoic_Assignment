@@ -1,11 +1,17 @@
 // Mock analyzeSentiment before importing generateMarketAnalysis
-jest.spyOn(require('../server/services/gemini'), 'analyzeSentiment').mockResolvedValue({
-  pulse: 'bullish',
-  confidence: 90,
-  llm_explanation: 'Test',
+jest.mock('../server/services/gemini', () => {
+  const original = jest.requireActual('../server/services/gemini');
+  return {
+    ...original,
+    analyzeSentiment: jest.fn().mockResolvedValue({
+      pulse: 'bullish',
+      confidence: 90,
+      llm_explanation: 'Test',
+    }),
+  };
 });
 
-const { generateMarketAnalysis } = require('../server/services/gemini');
+import { generateMarketAnalysis } from '../server/services/gemini';
 
 describe('generateMarketAnalysis', () => {
   it('returns fallback for invalid momentumScore', async () => {
@@ -20,7 +26,7 @@ describe('generateMarketAnalysis', () => {
   });
   it('returns fallback for invalid newsHeadlines', async () => {
     // intentionally passing invalid type to test fallback
-    const result = await generateMarketAnalysis('AAPL', 1.23, [1,2,3], 123);
+    const result = await generateMarketAnalysis('AAPL', 1.23, [1,2,3], 123 as any);
     expect(result.pulse).toBe('neutral');
     expect(result.error).toMatch(/newsHeadlines/);
   });
