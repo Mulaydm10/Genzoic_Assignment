@@ -1,12 +1,22 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { z } from "zod";
-import { tickerRequestSchema, type MarketPulseResponse } from "@shared/schema";
+import { tickerRequestSchema, type MarketPulseResponse } from "../shared/schema";
 import { calculateMomentumScore, generateMockReturns, calculateVolatility } from "./services/momentum";
 import { fetchNewsHeadlines } from "./services/news";
 import { analyzeSentiment, generateMarketAnalysis } from "./services/gemini";
 import { cache } from "./services/cache";
 import { rateLimiter } from "./services/rateLimit";
+
+function isValidAIResponse(obj: any): boolean {
+  return (
+    obj &&
+    typeof obj === "object" &&
+    "pulse" in obj &&
+    "confidence" in obj &&
+    "llm_explanation" in obj
+  );
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Market Pulse API endpoint
@@ -41,29 +51,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("Incoming momentumScore type:", typeof momentumScore, momentumScore);
       const ms = Number(momentumScore);
       const aiAnalysis = await generateMarketAnalysis(ticker, ms, returns, newsHeadlines);
+      if (!aiAnalysis || typeof aiAnalysis !== "object") {
+        console.warn("[LLM Warning] Invalid or missing AI analysis", {
+          ticker,
+          status: "fallback used",
+          timestamp: new Date().toISOString(),
+        });
+        return res.status(500).json({
+          pulse: "neutral",
+          confidence: 50,
+          llm_explanation: "LLM fallback failed. Internal error.",
+          error: "Internal Server Error",
+        });
+      }
       let pulse: "bullish" | "neutral" | "bearish" = aiAnalysis.pulse;
       let confidence = aiAnalysis.confidence ?? 50;
       let explanation = aiAnalysis.llm_explanation;
       const response: MarketPulseResponse = {
-        ticker,
-        momentum_score: ms,
-        returns,
-        pulse,
-        confidence,
-        llm_explanation: explanation,
-        news_headlines: newsHeadlines,
+        ticker: ticker ?? "",
+        momentum_score: ms ?? 0,
+        returns: returns ?? [],
+        pulse: pulse ?? "neutral",
+        confidence: confidence ?? 50,
+        llm_explanation: explanation ?? "",
+        news_headlines: newsHeadlines ?? [],
         analysis_timestamp: new Date().toISOString(),
         cache_hit: false,
       };
+      if (!isValidAIResponse(response)) {
+        console.warn("[LLM Warning] Invalid AI response object structure", {
+          ticker,
+          status: "invalid ai response",
+          timestamp: new Date().toISOString(),
+        });
+        return res.status(500).json({
+          pulse: "neutral",
+          confidence: 50,
+          llm_explanation: "Invalid AI response.",
+          error: "Invalid AI response object structure",
+        });
+      }
       if (!nocache) {
         cache.set(cacheKey, response);
       } else {
         console.log(`[Gemini] Live LLM used for: ${ticker} (cache bypassed)`);
       }
-      if (aiAnalysis.error) {
+      if (aiAnalysis && aiAnalysis.error) {
         console.log(`[Gemini] Fallback used for: ${ticker} (error: ${aiAnalysis.error})`);
         // Surface Gemini error to frontend
-        return res.status(200).json({ ...response, error: aiAnalysis.error });
+        return res.status(200).json({ ...response, error: aiAnalysis?.error ?? null });
       }
       res.status(200).json(response);
     } catch (err: any) {
